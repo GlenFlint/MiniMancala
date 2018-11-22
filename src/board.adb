@@ -19,10 +19,19 @@ package body Board is
    
    procedure Print_Board is
       
+      Trace_Board : Boolean := False;
+      
    begin
       
-      Text_IO.Put_Line("1 - " & Beans'image(Board(NORTH, LEFT)) & Beans'image(Board(NORTH, RIGHT)));
-      Text_IO.Put_Line("0 - " & Beans'image(Board(SOUTH, LEFT)) & Beans'image(Board(SOUTH, RIGHT)));                 
+      if (Trace_Board) then
+      
+         Text_IO.Put_Line("NORTH - " & Beans'image(Board(NORTH, WEST)) & Beans'image(Board(NORTH, EAST)));
+         Text_IO.Put_Line("SOUTH - " & Beans'image(Board(SOUTH, WEST)) & Beans'image(Board(SOUTH, EAST))); 
+      
+         Text_IO.Put_Line("------------");
+         
+      end if;
+      
       
    end Print_Board;
    
@@ -51,21 +60,21 @@ package body Board is
       
       Next_Player_Lookup : Next_Players := (
                                      NORTH => (
-                                               LEFT => SOUTH,
-                                               RIGHT =>  NORTH),
+                                               WEST => SOUTH,
+                                               EAST =>  NORTH),
                                      SOUTH => (
-                                               LEFT => SOUTH,
-                                               RIGHT => NORTH ));
+                                               WEST => SOUTH,
+                                               EAST => NORTH ));
       
       type Next_Hands is array (Players, Hands) of Hands;
       
       Next_Hand_Lookup : Next_Hands := (
                                  NORTH => (
-                                           LEFT => LEFT,
-                                           RIGHT => LEFT),
+                                           WEST => WEST,
+                                           EAST => WEST),
                                  SOUTH => (
-                                           LEFT => RIGHT,
-                                           RIGHT => RIGHT ));
+                                           WEST => EAST,
+                                           EAST => EAST ));
 
    begin
       

@@ -1,7 +1,7 @@
 package Board is 
       
    type Players is (NORTH, SOUTH);   
-   type Hands is (LEFT, RIGHT);   
+   type Hands is (WEST, EAST);   
       
    Total_Cups             : constant := 4;
    Starting_Beans_Per_Cup : constant := 2;

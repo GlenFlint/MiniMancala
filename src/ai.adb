@@ -1,3 +1,4 @@
+with Text_IO;
 with Flip_A_Coin;
 
 package body ai is
@@ -32,36 +33,36 @@ package body ai is
    type Best_Moves is array (Board_Positions) of Board.Hands;
 
    Best_Move : Best_Moves := (
-                           x1160 => Board.RIGHT,
-                           x1205 => Board.LEFT,
-                           x1304 => Board.LEFT,
-                           x1340 => Board.LEFT,
-                           x1403 => Board.LEFT,
-                           x1430 => Board.LEFT,
-                           x1502 => Board.LEFT,
-                           x1520 => Board.LEFT,
-                           x1601 => Board.LEFT,
-                           x1610 => Board.RIGHT,
-                           x1700 => Board.LEFT,
-                           x2222 => Board.LEFT,
-                           x2330 => Board.LEFT,
-                           x2420 => Board.LEFT,
-                           x2510 => Board.LEFT,
-                           x3140 => Board.RIGHT,
-                           x3203 => Board.LEFT,
-                           x3230 => Board.LEFT,
-                           x3320 => Board.LEFT,
-                           x4103 => Board.LEFT,
-                           x4130 => Board.RIGHT,
-                           x4220 => Board.LEFT,
-                           x5120 => Board.RIGHT,
-                           x6101 => Board.LEFT,
-                           x6110 => Board.RIGHT );
+                           x1160 => Board.EAST,
+                           x1205 => Board.WEST,
+                           x1304 => Board.WEST,
+                           x1340 => Board.WEST,
+                           x1403 => Board.WEST,
+                           x1430 => Board.WEST,
+                           x1502 => Board.WEST,
+                           x1520 => Board.WEST,
+                           x1601 => Board.WEST,
+                           x1610 => Board.EAST,
+                           x1700 => Board.WEST,
+                           x2222 => Board.WEST,
+                           x2330 => Board.WEST,
+                           x2420 => Board.WEST,
+                           x2510 => Board.WEST,
+                           x3140 => Board.EAST,
+                           x3203 => Board.WEST,
+                           x3230 => Board.WEST,
+                           x3320 => Board.WEST,
+                           x4103 => Board.WEST,
+                           x4130 => Board.EAST,
+                           x4220 => Board.WEST,
+                           x5120 => Board.EAST,
+                           x6101 => Board.WEST,
+                           x6110 => Board.EAST );
 
    type Other_Hands is array (Board.Hands) of Board.Hands;
 
-   Other_Hand : Other_Hands := (Board.LEFT  => Board.RIGHT,
-                                Board.RIGHT => Board.LEFT);
+   Other_Hand : Other_Hands := (Board.WEST  => Board.EAST,
+                                Board.EAST => Board.WEST);
 
    ----------------------------------
 
@@ -72,8 +73,8 @@ package body ai is
       type Random_Moves is array (Flip_A_Coin.Coin) of Board.Hands;
 
       Random_Move : Random_Moves := (
-                                     Flip_A_Coin.HEADS=> Board.LEFT,
-                                     Flip_A_Coin.TAILS=> Board.RIGHT);
+                                     Flip_A_Coin.HEADS=> Board.WEST,
+                                     Flip_A_Coin.TAILS=> Board.EAST);
    begin
 
       return Random_Move(Flip_A_Coin.Flip);
@@ -100,8 +101,8 @@ package body ai is
 
       type High_Hands is array (Board.Players) of Board.Hands;
 
-      High_Hand : High_Hands := (Board.NORTH => Board.LEFT,
-                                 Board.SOUTH => Board.RIGHT);
+      High_Hand : High_Hands := (Board.NORTH => Board.EAST,
+                                 Board.SOUTH => Board.WEST);
    begin
 
       return keyShift(Player, High_Hand(Player));
@@ -129,11 +130,19 @@ package body ai is
    function key(Player:Board.Players)
                 return Board_Positions is
 
-      String_Key : String := keyPlayer(Player) & keyPlayer(opponent(Player));
+      String_Key : String := "X" & keyPlayer(Player) & keyPlayer(opponent(Player));
+
+      Trace : Boolean := False;
 
    begin
 
-      return Board_Positions'Value("X" & String_Key);
+      if (Trace) then
+
+         Text_IO.Put_Line(Board.Players'Image(Player) & " - " & String_Key);
+
+      end if;
+
+      return Board_Positions'Value(String_Key);
 
    end key;
 
@@ -143,9 +152,19 @@ package body ai is
                    Player: Board.Players)
                    return Board.Hands is
 
+      Cup_To_Empty : Board.Hands;
+
    begin
 
-      return Best_Move(key(Player));
+      Cup_To_Empty := Best_Move(key(Player));
+
+      if (Board."="(Player, Board.NORTH)) then
+
+         Cup_To_Empty := Other_Hand ( Cup_To_Empty );  -- Switch hands on North
+
+      end if;
+
+      return Cup_To_Empty;
 
    exception
 
