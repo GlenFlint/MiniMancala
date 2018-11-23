@@ -1,6 +1,7 @@
 with Board;
 with AI;
 with Flip_A_Coin;
+with Ada.Strings.Fixed;
 
 with Text_IO;
 
@@ -9,7 +10,7 @@ procedure Main is
    type Players_AI is array(Board.Players) of AI.AI_Types;
 
    Player_AI : Players_AI := (
-                              Board.NORTH => AI.WORST,
+                              Board.NORTH => AI.RANDOM,
                               Board.SOUTH => AI.RANDOM );
 
 
@@ -30,12 +31,6 @@ procedure Main is
                                           Board.NORTH => 0,
                                           Board.SOUTH => 0);
 
-   MAXIMUM_NUMBER_OF_TURNS : constant := 30;
-
-   type Turns is range 0..MAXIMUM_NUMBER_OF_TURNS;
-
-   type Turn_Counters is array(Turns) of Natural;
-
    type Random_Players is array (Flip_A_Coin.Coin) of Board.Players;
 
    Random_Player : Random_Players := (
@@ -48,7 +43,13 @@ procedure Main is
                                     Board.NORTH => Board.SOUTH,
                                     Board.SOUTH => Board.NORTH);
 
-   Turn_Counter : Turn_Counters := (others => 0);
+   MAXIMUM_NUMBER_OF_TURNS : constant := 30;
+
+   type Turns is range 0..MAXIMUM_NUMBER_OF_TURNS;
+
+   type Histogram_Of_Games_By_Turns is array(Turns) of Games;
+
+   Histogram_Of_Games_By_Turn : Histogram_Of_Games_By_Turns := (others => 0);
 
    Player : Board.Players;
 
@@ -56,7 +57,9 @@ procedure Main is
 
    Turn : Turns;
 
-   procedure Print_Statistics is
+   --------------------------------
+
+   procedure Print_Wins is
 
       Drawn : Games := Games'Last;
 
@@ -80,7 +83,86 @@ procedure Main is
 
       Text_IO.Put_Line ( "Drawn            " & Games'Image ( Drawn ));
 
+   end Print_Wins;
+
+   ------------------
+
+   package Turn_IO is new Text_IO.Integer_IO ( Turns );
+
+   package Game_IO is new Text_IO.Integer_IO ( Games );
+
+   procedure Print_Statistics is
+
+      MAXIMUM_TOTAL_TURNS : constant := MAXIMUM_NUMBER_OF_TURNS * GAMES_TO_PLAY;
+
+      type Total_Possible_Turns is range 0..MAXIMUM_TOTAL_TURNS;
+
+      type Total_Possible_Turns_Squared is range 0..MAXIMUM_TOTAL_TURNS ** 2;
+
+      Total_Turns : Total_Possible_Turns := 0;
+
+      Index : Total_Possible_Turns := 0;
+
+      Next_Index : Total_Possible_Turns;
+
+      Total_Turns_Squared : Total_Possible_Turns_Squared := 0;
+
+      Frequency : Games;
+
+      Min : Turns := 0;
+
+      Max : Turns;
+
+      type Quartiles is digits 4 range 0.0..Float(MAXIMUM_NUMBER_OF_TURNS);
+
+      Median : Games := Games'Last / 2;
+
+      Whole_Remainder : Games := Games'Last mod 2;
+
+      Half_Remainder  : Games := Median mod 2;
+
+      First_Quartile  : Games := Median / 2;
+
+      Third_Quartile  : Games := Median + First_Quartile + Whole_Remainder;
+
+   begin
+
+      for Turn in Turns loop
+
+         Frequency := Histogram_Of_Games_By_Turn ( Turn );
+
+         if (Frequency > 0) then
+
+            if (Min = 0) then
+
+               Min := Turn;
+
+            end if;
+
+            Max := Turn;
+
+         end if;
+
+         Turn_IO.put(Item => Turn,      Width => 4);
+
+         Game_IO.Put(Item => Frequency, Width => 4);
+
+         Text_IO.Put(" | ");
+
+         if (Frequency > 0 ) then
+
+            Text_IO.Put ( Ada.Strings.Fixed."*"(Integer ( Frequency ), '*' ));
+
+         end if;
+
+         Text_IO.New_Line;
+
+      end loop;
+
    end Print_Statistics;
+
+   ------------------------------------
+
 
 begin
 
@@ -123,11 +205,13 @@ begin
 
       end loop;   -- end game
 
-      Turn_Counter ( Turn ) := Turn_Counter ( Turn ) + 1;
+      Histogram_Of_Games_By_Turn ( Turn ) := Histogram_Of_Games_By_Turn ( Turn ) + 1;
 
       Board.Print_Board;
 
    end loop;  -- end all games
+
+   Print_Wins;
 
    Print_Statistics;
 
