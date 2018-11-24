@@ -11,7 +11,7 @@ procedure Main is
 
    Player_AI : Players_AI := (
                               Board.NORTH => AI.BEST,
-                              Board.SOUTH => AI.RANDOM );
+                              Board.SOUTH => AI.BEST );
 
    type Random_Players is array (Flip_A_Coin.Coin) of Board.Players;
 

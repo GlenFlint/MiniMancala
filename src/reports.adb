@@ -269,7 +269,7 @@ package body Reports is
       
          Mean : Turn_Index;         
        
-         type Turn_Deviations is digits 12 range 1.0..Float( MAXIMUM_TOTAL_TURNS * MAXIMUM_TOTAL_TURNS );
+         type Turn_Deviations is digits 12 range 0.0..Float( MAXIMUM_TOTAL_TURNS * MAXIMUM_TOTAL_TURNS );
          
          Standard_Deviation : Turn_Deviations;
          
