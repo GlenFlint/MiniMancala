@@ -1,7 +1,7 @@
 with Text_IO;
 with Flip_A_Coin;
 
-package body ai is
+package body AI is
 
    type Board_Positions is (
                             x1160,
@@ -65,10 +65,10 @@ package body ai is
                                 Board.EAST => Board.WEST);
 
    --------------------------------
-   -- randomAI                   --
+   -- Random_AI                   --
    --------------------------------
 
-   function randomAI(
+   function Random_AI(
                      Player: Board.Players)
                      return Board.Hands is
 
@@ -81,20 +81,20 @@ package body ai is
 
       return Random_Move(Flip_A_Coin.Flip);
 
-   end randomAI;
+   end Random_AI;
 
    --------------------------------
-   -- key                        --
+   -- Key                        --
    --------------------------------
 
-   function key(Player:Board.Players)
+   function Key(Player:Board.Players)
                 return Board_Positions is
 
       --------------------------------
-      -- opponent                   --
+      -- Opponent                   --
       --------------------------------
 
-      function opponent(Player:Board.Players)
+      function Opponent(Player:Board.Players)
                         return Board.Players is
 
          type Opponents is array(Board.Players) of Board.Players;
@@ -106,14 +106,18 @@ package body ai is
 
          return Opp(Player);
 
-      end opponent;
+      end Opponent;
 
       --------------------------------
-      -- keyPlayer                  --
+      -- Key_Player                 --
       --------------------------------
 
-      function keyPlayer(Player: Board.Players)
-                         return String is
+      type Keys is new String(1..5);
+
+      type Player_Keys is new String (1..2);
+
+      function Key_Player(Player: Board.Players)
+                         return Player_Keys is
 
          type High_Hands is array (Board.Players) of Board.Hands;
 
@@ -121,28 +125,34 @@ package body ai is
                                     Board.SOUTH => Board.WEST);
 
          --------------------------------
-         -- keyShift                   --
+         -- Key_Shift                   --
          --------------------------------
 
-         function keyShift(Player:Board.Players; High_Hand:Board.Hands)
-                           return String is
+         function Key_Shift(Player:Board.Players; High_Hand:Board.Hands)
+                           return Player_Keys is
 
-            High_Cup : String := Board.Beans'image(Board.Count_Beans(Player, High_Hand));
-            Low_Cup  : String := Board.Beans'image(Board.Count_Beans(Player, Other_Hand(High_Hand)));
+            High_Cup : Character := Board.Beans'image(Board.Count_Beans(Player, High_Hand))(2);
+            Low_Cup  : Character := Board.Beans'image(Board.Count_Beans(Player, Other_Hand(High_Hand)))(2);
+
+            Player_Key : Player_Keys;
 
          begin
 
-            return High_Cup(High_Cup'Last) & Low_Cup(Low_Cup'Last);
+            Player_Key(1) := High_Cup;
 
-         end keyShift;
+            Player_Key(2) := Low_Cup;
+
+            return Player_Key;
+
+         end Key_Shift;
 
       begin
 
-         return keyShift(Player, High_Hand(Player));
+         return Key_Shift(Player, High_Hand(Player));
 
-      end keyPlayer;
+      end Key_Player;
 
-      String_Key : String := "X" & keyPlayer(Player) & keyPlayer(opponent(Player));
+      The_Key : Keys := Keys ( 'X' & Key_Player(Player) & Key_Player(Opponent(Player) ) );
 
       Trace : Boolean := False;
 
@@ -150,19 +160,19 @@ package body ai is
 
       if (Trace) then
 
-         Text_IO.Put_Line(Board.Players'Image(Player) & " - " & String_Key);
+         Text_IO.Put_Line(Board.Players'Image(Player) & " - " & String ( The_Key ) );
 
       end if;
 
-      return Board_Positions'Value(String_Key);
+      return Board_Positions'Value( String ( The_Key ) );
 
-   end key;
+   end Key;
 
    --------------------------------
-   -- bestAI                     --
+   -- Best_AI                    --
    --------------------------------
 
-   function bestAI(
+   function Best_AI(
                    Player: Board.Players)
                    return Board.Hands is
 
@@ -170,7 +180,7 @@ package body ai is
 
    begin
 
-      Cup_To_Empty := Best_Move(key(Player));
+      Cup_To_Empty := Best_Move(Key(Player));
 
       if (Board."="(Player, Board.NORTH)) then
 
@@ -184,29 +194,29 @@ package body ai is
 
       when Constraint_Error =>
 
-         return randomAI(Player);
+         return Random_AI(Player);
 
-   end bestAI;
+   end Best_AI;
 
    --------------------------------
-   -- worstAI                     --
+   -- Worst_AI                   --
    --------------------------------
 
-   function worstAI(
+   function Worst_AI(
                     Player: Board.Players)
                     return Board.Hands is
 
    begin
 
-      return Other_Hand(bestAI(Player));
+      return Other_Hand(Best_AI(Player));
 
-   end worstAI;
+   end Worst_AI;
 
    --------------------------------
-   -- consultAI                     --
+   -- Consult_AI                 --
    --------------------------------
 
-   function consultAI(
+   function Consult_AI(
                       AI : AI_Types;
                       Player: Board.Players)
                       return Board.Hands is
@@ -217,27 +227,27 @@ package body ai is
       type AI_Functions is array(AI_Types) of AI_Function_Types;
 
       AI_Function : AI_Functions := (
-                                     BEST   => bestAI'Access,
-                                     WORST  => worstAI'Access,
-                                     RANDOM => randomAI'Access );
+                                     BEST   => Best_AI'Access,
+                                     WORST  => Worst_AI'Access,
+                                     RANDOM => Random_AI'Access );
 
 
    begin
 
       return AI_Function(AI).all ( (Player) );
 
-   end consultAI;
+   end Consult_AI;
 
    --------------------------------
-   -- turn                       --
+   -- Turn                       --
    --------------------------------
 
-   function turn(
+   function Turn(
                  AI : AI_Types;
                  Player:Board.Players)
                  return Boolean is
 
-      Cup_To_Empty : Board.Hands := consultAI(AI, Player);
+      Cup_To_Empty : Board.Hands := Consult_AI(AI, Player);
 
       Bean_Moved : Boolean := Board.Move_Beans ( Player, Cup_To_Empty )
         or else Board.Move_Beans ( Player, Other_Hand (Cup_To_Empty) );
@@ -245,6 +255,6 @@ package body ai is
 
       return Bean_Moved;
 
-   end turn;
+   end Turn;
 
-end ai;
+end AI;

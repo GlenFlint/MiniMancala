@@ -1,15 +1,15 @@
 with Board;
 
-package ai is
+package AI is
 
    type AI_Types is (
                      BEST, 
                      WORST,
                      RANDOM );
    
-   function turn(
+   function Turn(
                  AI : AI_Types;
                  Player:Board.Players)
                  return Boolean;
 
-end ai;
+end AI;
