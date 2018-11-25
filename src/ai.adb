@@ -33,38 +33,40 @@ package body ai is
    type Best_Moves is array (Board_Positions) of Board.Hands;
 
    Best_Move : Best_Moves := (
-                           x1160 => Board.EAST,
-                           x1205 => Board.WEST,
-                           x1304 => Board.WEST,
-                           x1340 => Board.WEST,
-                           x1403 => Board.WEST,
-                           x1430 => Board.WEST,
-                           x1502 => Board.WEST,
-                           x1520 => Board.WEST,
-                           x1601 => Board.WEST,
-                           x1610 => Board.EAST,
-                           x1700 => Board.WEST,
-                           x2222 => Board.WEST,
-                           x2330 => Board.WEST,
-                           x2420 => Board.WEST,
-                           x2510 => Board.WEST,
-                           x3140 => Board.EAST,
-                           x3203 => Board.WEST,
-                           x3230 => Board.WEST,
-                           x3320 => Board.WEST,
-                           x4103 => Board.WEST,
-                           x4130 => Board.EAST,
-                           x4220 => Board.WEST,
-                           x5120 => Board.EAST,
-                           x6101 => Board.WEST,
-                           x6110 => Board.EAST );
+                              x1160 => Board.EAST,
+                              x1205 => Board.WEST,
+                              x1304 => Board.WEST,
+                              x1340 => Board.WEST,
+                              x1403 => Board.WEST,
+                              x1430 => Board.WEST,
+                              x1502 => Board.WEST,
+                              x1520 => Board.WEST,
+                              x1601 => Board.WEST,
+                              x1610 => Board.EAST,
+                              x1700 => Board.WEST,
+                              x2222 => Board.WEST,
+                              x2330 => Board.WEST,
+                              x2420 => Board.WEST,
+                              x2510 => Board.WEST,
+                              x3140 => Board.EAST,
+                              x3203 => Board.WEST,
+                              x3230 => Board.WEST,
+                              x3320 => Board.WEST,
+                              x4103 => Board.WEST,
+                              x4130 => Board.EAST,
+                              x4220 => Board.WEST,
+                              x5120 => Board.EAST,
+                              x6101 => Board.WEST,
+                              x6110 => Board.EAST );
 
    type Other_Hands is array (Board.Hands) of Board.Hands;
 
    Other_Hand : Other_Hands := (Board.WEST  => Board.EAST,
                                 Board.EAST => Board.WEST);
 
-   ----------------------------------
+   --------------------------------
+   -- randomAI                   --
+   --------------------------------
 
    function randomAI(
                      Player: Board.Players)
@@ -81,54 +83,64 @@ package body ai is
 
    end randomAI;
 
-   -----------------------------------
-   function keyShift(Player:Board.Players; High_Hand:Board.Hands)
-                     return String is
-
-      High_Cup : String := Board.Beans'image(Board.Count_Beans(Player, High_Hand));
-      Low_Cup  : String := Board.Beans'image(Board.Count_Beans(Player, Other_Hand(High_Hand)));
-
-   begin
-
-      return High_Cup(High_Cup'Last) & Low_Cup(Low_Cup'Last);
-
-   end keyShift;
-
-   -----------------------------------
-
-   function keyPlayer(Player: Board.Players)
-                      return String is
-
-      type High_Hands is array (Board.Players) of Board.Hands;
-
-      High_Hand : High_Hands := (Board.NORTH => Board.EAST,
-                                 Board.SOUTH => Board.WEST);
-   begin
-
-      return keyShift(Player, High_Hand(Player));
-
-   end keyPlayer;
-
-   ----------------------------------
-
-   function opponent(Player:Board.Players)
-                     return Board.Players is
-
-      type Opponents is array(Board.Players) of Board.Players;
-
-      Opp : Opponents := ( Board.NORTH => Board.SOUTH,
-                           Board.SOUTH => Board.NORTH);
-
-   begin
-
-      return Opp(Player);
-
-   end opponent;
-
-   -----------------------------------
+   --------------------------------
+   -- key                        --
+   --------------------------------
 
    function key(Player:Board.Players)
                 return Board_Positions is
+
+      --------------------------------
+      -- opponent                   --
+      --------------------------------
+
+      function opponent(Player:Board.Players)
+                        return Board.Players is
+
+         type Opponents is array(Board.Players) of Board.Players;
+
+         Opp : Opponents := ( Board.NORTH => Board.SOUTH,
+                              Board.SOUTH => Board.NORTH);
+
+      begin
+
+         return Opp(Player);
+
+      end opponent;
+
+      --------------------------------
+      -- keyPlayer                  --
+      --------------------------------
+
+      function keyPlayer(Player: Board.Players)
+                         return String is
+
+         type High_Hands is array (Board.Players) of Board.Hands;
+
+         High_Hand : High_Hands := (Board.NORTH => Board.EAST,
+                                    Board.SOUTH => Board.WEST);
+
+         --------------------------------
+         -- keyShift                   --
+         --------------------------------
+
+         function keyShift(Player:Board.Players; High_Hand:Board.Hands)
+                           return String is
+
+            High_Cup : String := Board.Beans'image(Board.Count_Beans(Player, High_Hand));
+            Low_Cup  : String := Board.Beans'image(Board.Count_Beans(Player, Other_Hand(High_Hand)));
+
+         begin
+
+            return High_Cup(High_Cup'Last) & Low_Cup(Low_Cup'Last);
+
+         end keyShift;
+
+      begin
+
+         return keyShift(Player, High_Hand(Player));
+
+      end keyPlayer;
 
       String_Key : String := "X" & keyPlayer(Player) & keyPlayer(opponent(Player));
 
@@ -146,7 +158,9 @@ package body ai is
 
    end key;
 
-   -----------------------------------------
+   --------------------------------
+   -- bestAI                     --
+   --------------------------------
 
    function bestAI(
                    Player: Board.Players)
@@ -174,11 +188,13 @@ package body ai is
 
    end bestAI;
 
-   --------------------------------------------------
+   --------------------------------
+   -- worstAI                     --
+   --------------------------------
 
    function worstAI(
-                   Player: Board.Players)
-                   return Board.Hands is
+                    Player: Board.Players)
+                    return Board.Hands is
 
    begin
 
@@ -186,12 +202,14 @@ package body ai is
 
    end worstAI;
 
-   -----------------------------------------------------
+   --------------------------------
+   -- consultAI                     --
+   --------------------------------
 
    function consultAI(
-               AI : AI_Types;
-               Player: Board.Players)
-               return Board.Hands is
+                      AI : AI_Types;
+                      Player: Board.Players)
+                      return Board.Hands is
 
       type AI_Function_Types is access function(Player: Board.Players)
                                                 return Board.Hands;
@@ -210,7 +228,9 @@ package body ai is
 
    end consultAI;
 
-   -------------------------------------------
+   --------------------------------
+   -- turn                       --
+   --------------------------------
 
    function turn(
                  AI : AI_Types;

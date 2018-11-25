@@ -2,7 +2,21 @@ with Text_IO;
 with Ada.Strings.Fixed;     
 with Ada.Numerics.Generic_Elementary_Functions;
 
-package body Reports is
+package body Reports is   
+      
+   GAMES_TO_PLAY : constant := 100;
+      
+   type Games is range 0..GAMES_TO_PLAY;
+   
+   type Game_Number is range 1..GAMES_TO_PLAY;
+   
+   Game : Games := 0;
+      
+   MAXIMUM_NUMBER_OF_TURNS : constant := 30;
+   
+   type Turns is range 0..MAXIMUM_NUMBER_OF_TURNS;   
+   
+   Turn : Turns;
       
    type Game_Counters is array (Board.Players) of Games; 
       
@@ -20,6 +34,8 @@ package body Reports is
                                      Board.SOUTH => 0);  
       
    --------------------------------
+   -- Record_Start               --
+   --------------------------------
    
    procedure Record_Start (
                            Player:Board.Players) is
@@ -28,20 +44,55 @@ package body Reports is
             
       Start_Counter(Player) := Start_Counter(Player) + 1;
       
+      Turn := 0;
+      
+      Game := Game + 1;
+      
    end Record_Start;
    
-   ----------------------------------
+   --------------------------------
+   -- Record_Next_Turn           --
+   --------------------------------
    
-   procedure Record_Turn(
-                         Turn:Turns) is
+   function Record_Next_Turn 
+     return Boolean is
+      
+      Game_Continues : Boolean := True;
+      
+   begin
+      
+      if (Turn < Turns'Last ) then
+         
+         Turn := Turn + 1;
+         
+      else
+         
+         Game_Continues := False;
+         
+      end if;
+        
+      return Game_Continues;  
+      
+   end Record_Next_Turn;
+   
+   --------------------------------
+   -- Record_End_Of_Game         --
+   --------------------------------
+   
+   function End_Of_Game 
+     return Boolean is
       
    begin      
                      
       Histogram_Of_Games_By_Turn ( Turn ) := Histogram_Of_Games_By_Turn ( Turn ) + 1;
       
-   end Record_Turn;
+      return Game >= Games'Last;
       
-   -----------------------------------
+   end End_Of_Game;
+      
+   --------------------------------
+   -- Record_Win                 --
+   --------------------------------
    
    procedure Record_Win(
                         Player:Board.Players) is
@@ -53,13 +104,18 @@ package body Reports is
    end Record_Win;
       
    --------------------------------
-   
+   -- Print                      --
+   --------------------------------   
       
    procedure Print is
                      
       type Turn_Index is delta 0.5 range 1.0..Float(MAXIMUM_NUMBER_OF_TURNS);   
          
       package Turn_Index_IO is new Text_IO.Fixed_IO ( Turn_Index );
+      
+      --------------------------------
+      -- Record_End_Of_Game         --
+      --------------------------------
    
       procedure Print_Wins is
       
@@ -87,7 +143,9 @@ package body Reports is
       
       end Print_Wins;
    
-      ------------------
+      --------------------------------
+      -- Print_Histogram            --
+      --------------------------------
    
       package Turn_IO is new Text_IO.Integer_IO ( Turns );
    
@@ -121,16 +179,22 @@ package body Reports is
       
       end Print_Histogram;
    
-      ----------------------------------------------------
+      --------------------------------
+      -- Print_Quartiles            --
+      --------------------------------
     
       procedure Print_Quartiles is
       
          type Game_Index is delta 0.5 range 1.0..Float(GAMES_TO_PLAY);
+         
+         --------------------------------
+         -- Find_Median Game           --
+         --------------------------------
       
          function Find_Median(
                               First_Game:Game_Number;
                               Last_Game :Game_Number) 
-                           return Game_Index is
+                              return Game_Index is
                  
          begin
          
@@ -138,11 +202,13 @@ package body Reports is
          
          end Find_Median;     
       
-         ----------------      
+         --------------------------------
+         -- Find Median Turn           --
+         --------------------------------     
       
          function Find_Median(
                               Game:Game_Index) 
-                           return Turn_Index is
+                              return Turn_Index is
                
             Frequency : Games;
                
@@ -249,7 +315,9 @@ package body Reports is
                   
       end Print_Quartiles;
    
-      ---------------------
+      --------------------------------
+      -- Print_Statistics           --
+      --------------------------------
    
       procedure Print_Statistics is
                                  
@@ -300,8 +368,8 @@ package body Reports is
          
          Standard_Deviation := 
            Turn_Deviation_Functions.Sqrt ( ( Turn_Deviations(GAMES_TO_PLAY * Total_Turns_Squared)
-                                            - Turn_Deviations ( Total_Turns * Total_Turns ) )
-                                      / Turn_Deviations ( GAMES_TO_PLAY * ( GAMES_TO_PLAY - 1 ) ) );
+                                           - Turn_Deviations ( Total_Turns * Total_Turns ) )
+                                           / Turn_Deviations ( GAMES_TO_PLAY * ( GAMES_TO_PLAY - 1 ) ) );
          Text_IO.Put("Mean : ");
          Turn_Index_IO.Put ( Mean, Aft => 1);
          Text_IO.New_Line;

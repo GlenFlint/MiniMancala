@@ -6,7 +6,10 @@ package body Board is
    
    Board : Boards;
 
-   ----------------
+   --------------------------------
+   -- Start_Game                 --
+   --------------------------------
+   
    procedure Start_Game is
       
    begin
@@ -15,7 +18,9 @@ package body Board is
       
    end Start_Game;
    
-   ---------------------------
+   --------------------------------
+   -- Print_Board                --
+   --------------------------------
    
    procedure Print_Board is
       
@@ -35,7 +40,9 @@ package body Board is
       
    end Print_Board;
    
-   -----------------------------------
+   --------------------------------
+   -- Count_Beans                --
+   --------------------------------
    
    function Count_Beans(
                         Player:Players; 
@@ -48,7 +55,9 @@ package body Board is
       
    end Count_Beans;
    
-   --------------------------------------
+   --------------------------------
+   -- Next_Cup                   --
+   --------------------------------
    
    procedure Next_Cup (
                        Player : in Players;
@@ -59,22 +68,22 @@ package body Board is
       type Next_Players is array (Players, Hands) of Players;
       
       Next_Player_Lookup : Next_Players := (
-                                     NORTH => (
-                                               WEST => SOUTH,
-                                               EAST =>  NORTH),
-                                     SOUTH => (
-                                               WEST => SOUTH,
-                                               EAST => NORTH ));
+                                            NORTH => (
+                                                      WEST => SOUTH,
+                                                      EAST =>  NORTH),
+                                            SOUTH => (
+                                                      WEST => SOUTH,
+                                                      EAST => NORTH ));
       
       type Next_Hands is array (Players, Hands) of Hands;
       
       Next_Hand_Lookup : Next_Hands := (
-                                 NORTH => (
-                                           WEST => WEST,
-                                           EAST => WEST),
-                                 SOUTH => (
-                                           WEST => EAST,
-                                           EAST => EAST ));
+                                        NORTH => (
+                                                  WEST => WEST,
+                                                  EAST => WEST),
+                                        SOUTH => (
+                                                  WEST => EAST,
+                                                  EAST => EAST ));
 
    begin
       
@@ -84,7 +93,9 @@ package body Board is
       
    end Next_Cup;
    
-   -----------------------------------
+   --------------------------------
+   -- Move_Beans                 --
+   --------------------------------
    
    function Move_Beans (
                         Player : Players;
@@ -99,12 +110,7 @@ package body Board is
       
    begin
       
---      Text_IO.Put_Line (Players'image (Player ) & "-" & Hands'image(Hand));
-      
       Next_Cup ( Player, Hand, Next_Player, Next_Hand );
-      
- --     Text_IO.Put_Line (Players'image (Player ) & "-" & Hands'image(Hand) & "  " & 
-  --                      Players'image (Next_Player ) & "-" & Hands'image(Next_Hand));
       
       loop
          exit when (Count_Beans ( Player, Hand ) = 0 );
@@ -114,12 +120,8 @@ package body Board is
          Board ( Player, Hand ) := Board ( Player, Hand ) - 1;
          
          Board (Next_Player, Next_Hand ) := Board (Next_Player, Next_Hand ) + 1;
-         
---         Text_IO.Put_Line (Players'image (Next_Player ) & "-" & Hands'image(Next_Hand));
                
          Next_Cup ( Next_Player, Next_Hand, Next_Player, Next_Hand );
-         
- --        Text_IO.Put_Line (Players'image (Next_Player ) & "-" & Hands'image(Next_Hand));
          
          if (Player = Next_Player and Hand = Next_Hand ) then  -- starting cup
             

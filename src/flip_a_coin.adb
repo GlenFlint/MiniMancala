@@ -6,20 +6,28 @@ package body Flip_A_Coin is
    
    G: Random_Coin.Generator;
    
-procedure Reset is
+   ------------------
+   --  Reset       --
+   ------------------
    
-begin
+   procedure Reset is
+   
+   begin
    
       Random_Coin.Reset(G);
       
-end Reset;
+   end Reset;
    
-function Flip
-   return Coin is
+   ------------------
+   --  Flip        --
+   ------------------
+   
+   function Flip
+     return Coin is
       
-begin
+   begin
       
-   return Random_Coin.Random(G);
+      return Random_Coin.Random(G);
       
    end Flip;
    

@@ -29,21 +29,17 @@ procedure Main is
 
    Game_Continues : Boolean;
 
-   Turn : Reports.Turns;
-
 begin
 
    Text_IO.Put_Line("Let the games begin");
 
-   for Game in Reports.Game_Number loop
+   loop
 
       Board.Start_Game;
 
       Player := Random_Player ( Flip_A_Coin.Flip );
 
       Reports.Record_Start ( Player );
-
-      Turn   := 0;
 
       loop
 
@@ -61,21 +57,15 @@ begin
 
             exit;
 
-         elsif (Reports."<"(Turn, Reports.Turns'Last)) then
-
-              Turn := Reports."+"(Turn, 1);
-
-         else
-
-            exit;  -- end in a draw
-
          end if;
+
+         exit when not Reports.Record_Next_Turn;
 
       end loop;   -- end game
 
-      Reports.Record_Turn(Turn);
-
       Board.Print_Board;
+
+      exit when Reports.End_Of_Game;
 
    end loop;  -- end all games
 
