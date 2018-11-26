@@ -1,13 +1,25 @@
-project Mancala is
+with "../Ada_Drivers_Library/boards/stm32f429_discovery/stm32f429_discovery_full.gpr";
 
+project Mancala extends "../Ada_Drivers_Library/examples/shared/common/common.gpr" is
+
+   for Runtime ("Ada") use STM32F429_Discovery_Full'Runtime("Ada");
    for Source_Dirs use ("src");
    for Object_Dir use "obj";
-   for Main use ("main.adb");
+   for Create_Missing_Dirs use "True";
+
+   for Main use ("draw.adb");
 
    package Ide is
       for Vcs_Kind use "git";
       for Vcs_Repository_Root use "https://github.com/GlenFlint/MiniMancala/";
    end Ide;
+
+   package Linker is
+      for Default_Switches ("ada") use
+        ("-Wl,-gc-section", "-Wl,--print-memory-usage");
+   end Linker;
+
+   package Compiler renames STM32F429_Discovery_Full.Compiler;
 
 end Mancala;
 
