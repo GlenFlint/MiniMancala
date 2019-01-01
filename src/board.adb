@@ -1,4 +1,5 @@
 with Text_IO;
+with BeanGraphics;
 
 package body Board is
    
@@ -27,7 +28,7 @@ package body Board is
       Trace_Board : Boolean := False;
       
    begin
-      
+            
       if (Trace_Board) then
       
          Text_IO.Put_Line("NORTH - " & Beans'image(Board(NORTH, WEST)) & Beans'image(Board(NORTH, EAST)));

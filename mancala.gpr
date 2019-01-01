@@ -1,25 +1,32 @@
-with "../Ada_Drivers_Library/boards/stm32f429_discovery/stm32f429_discovery_full.gpr";
+with "../Ada_Drivers_Library/boards/MicroBit/microbit_zfp.gpr";
 
-project Mancala extends "../Ada_Drivers_Library/examples/shared/common/common.gpr" is
+project Mancala is
 
-   for Runtime ("Ada") use STM32F429_Discovery_Full'Runtime("Ada");
+   for Target use "arm-eabi";
+   for Runtime ("ada") use "ravenscar-sfp-microbit";
+   for Languages use ("Ada");
    for Source_Dirs use ("src");
    for Object_Dir use "obj";
+   for Main use ("draw.adb");
    for Create_Missing_Dirs use "True";
 
-   for Main use ("draw.adb");
-
    package Ide is
+      for Connection_Tool use "pyocd";
+      for Program_Host use ":1234";
+      for Communication_Protocol use "remote";
       for Vcs_Kind use "git";
       for Vcs_Repository_Root use "https://github.com/GlenFlint/MiniMancala/";
    end Ide;
+
+   package Compiler is
+      for Switches ("ada") use ("-g", "-O0");
+   end Compiler;
 
    package Linker is
       for Default_Switches ("ada") use
         ("-Wl,-gc-section", "-Wl,--print-memory-usage");
    end Linker;
 
-   package Compiler renames STM32F429_Discovery_Full.Compiler;
 
 end Mancala;
 

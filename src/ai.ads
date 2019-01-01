@@ -8,8 +8,13 @@ package AI is
                      RANDOM );
    
    function Turn(
-                 AI : AI_Types;
-                 Player:Board.Players)
+                 AI : in AI_Types;
+                 Player : in Board.Players)
+                 return Boolean;
+   
+   function Turn(
+                 Cup_To_Empty : in Board.Hands;
+                 Player : in Board.Players)
                  return Boolean;
 
 end AI;

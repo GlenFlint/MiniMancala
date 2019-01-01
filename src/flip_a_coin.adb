@@ -1,10 +1,10 @@
-with Ada.Numerics.Discrete_Random;
+--  with Ada.Numerics.Discrete_Random;
 
 package body Flip_A_Coin is
    
-   package Random_Coin is new Ada.Numerics.Discrete_Random(Coin);
-   
-   G: Random_Coin.Generator;
+--     package Random_Coin is new Ada.Numerics.Discrete_Random(Coin);
+--     
+--     G: Random_Coin.Generator;
    
    ------------------
    --  Reset       --
@@ -14,7 +14,9 @@ package body Flip_A_Coin is
    
    begin
    
-      Random_Coin.Reset(G);
+      --        Random_Coin.Reset(G);
+      
+      null;
       
    end Reset;
    
@@ -27,7 +29,9 @@ package body Flip_A_Coin is
       
    begin
       
-      return Random_Coin.Random(G);
+      --        return Random_Coin.Random(G);
+      
+      return HEADS;
       
    end Flip;
    
